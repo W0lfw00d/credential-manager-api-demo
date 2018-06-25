@@ -127,7 +127,7 @@
           await navigator.credentials.store(credentials);
         }
         LoginService.login(credentials)
-          .then(() => location.reload())
+          .then(() => this.$emit('userStatusChanged'))
           .catch(e => this.form.error = e.message);
 
         this.resetForm();

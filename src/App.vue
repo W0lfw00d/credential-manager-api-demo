@@ -1,8 +1,14 @@
 <template>
   <div id="app">
     <img src="./assets/logo.png">
-    <HellowWorld v-if="loggedIn" />
-    <LoginForm v-else />
+    <HellowWorld
+      v-if="loggedIn"
+      @userStatusChanged="checkUserStatus"
+    />
+    <LoginForm
+      v-else
+      @userStatusChanged="checkUserStatus"
+    />
   </div>
 </template>
 
@@ -21,9 +27,14 @@
         loggedIn: false
       };
     },
+    methods: {
+      checkUserStatus() {
+        const token = localStorage.getItem('user-token');
+        this.loggedIn = token !== null;
+      }
+    },
     created() {
-      const token = localStorage.getItem('user-token');
-      this.loggedIn = token !== null;
+      this.checkUserStatus();
     }
   };
 </script>
