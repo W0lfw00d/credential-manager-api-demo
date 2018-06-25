@@ -74,7 +74,8 @@
           username: '',
           password: '',
           error: ''
-        }
+        },
+        isCredentialApiAvailable: navigator.credentials && navigator.credentials.preventSilentAccess
       };
     },
     computed: {
@@ -84,7 +85,7 @@
     },
     created() {
 
-      if (navigator.credentials && navigator.credentials.preventSilentAccess) {
+      if (this.isCredentialApiAvailable) {
         (async () => {
 
           const credentials = await navigator.credentials.get({
@@ -117,15 +118,22 @@
         this.passwordLogin({ id: this.form.username, name: this.form.username, password: this.form.password });
       },
       async passwordLogin({ id, name, password }) {
-        const credentials = new PasswordCredential({
-          id,
-          name,
-          password
-        });
+        let credentials;
 
-        if (credentials instanceof Credential) {
-          await navigator.credentials.store(credentials);
+        if (this.isCredentialApiAvailable) {
+          credentials = new PasswordCredential({
+            id,
+            name,
+            password
+          });
+
+          if (credentials instanceof Credential) {
+            await navigator.credentials.store(credentials);
+          }
+        } else {
+          credentials = { id, name, password };
         }
+
         LoginService.login(credentials)
           .then(() => this.$emit('userStatusChanged'))
           .catch(e => this.form.error = e.message);
