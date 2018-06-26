@@ -18,7 +18,6 @@
     methods: {
       logout() {
         loginService.logout();
-        navigator.credentials.preventSilentAccess();
         this.$emit('userStatusChanged');
       }
     }

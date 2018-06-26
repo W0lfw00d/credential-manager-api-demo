@@ -72,7 +72,7 @@
           password: '',
           error: ''
         },
-        isCredentialApiAvailable: navigator.credentials && navigator.credentials.preventSilentAccess
+        isCredentialApiAvailable: window.PasswordCredential || window.FederatedCredential
       };
     },
     computed: {
@@ -117,7 +117,7 @@
       async passwordLogin({ id, name, password }) {
         let credentials;
 
-        if (this.isCredentialApiAvailable) {
+        if (window.PasswordCredential) {
           credentials = new PasswordCredential({
             id,
             name,

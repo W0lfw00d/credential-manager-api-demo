@@ -12,6 +12,9 @@ const LoginService = {
   },
   logout() {
     localStorage.removeItem('user-token');
+    if (navigator.credentials && navigator.credentials.preventSilentAccess) {
+      navigator.credentials.preventSilentAccess();
+    }
   }
 };
 
