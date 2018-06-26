@@ -9,6 +9,9 @@ const LoginService = {
         reject(new Error('Wrong credentials!'));
       }
     });
+  },
+  logout() {
+    localStorage.removeItem('user-token');
   }
 };
 

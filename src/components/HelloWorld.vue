@@ -11,13 +11,16 @@
 </template>
 
 <script>
-export default {
-  name: 'HelloWorld',
-  methods: {
-    logout(){
-      localStorage.clear();
-      this.$emit('userStatusChanged')
+  import loginService from '../service/login.service';
+
+  export default {
+    name: 'HelloWorld',
+    methods: {
+      logout() {
+        loginService.logout();
+        navigator.credentials.preventSilentAccess();
+        this.$emit('userStatusChanged');
+      }
     }
-  }
-}
+  };
 </script>

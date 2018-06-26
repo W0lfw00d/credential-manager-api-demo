@@ -13,7 +13,7 @@
             </p>
           </div>
           <div class="field">
-            <p class="control has-icons-left has-icons-right">
+            <p class="control has-icons-left">
               <input
                 id="username"
                 v-model="form.username"
@@ -25,9 +25,6 @@
               >
               <span class="icon is-small is-left">
                 <i class="fas fa-envelope" />
-              </span>
-              <span class="icon is-small is-right">
-                <i class="fas fa-check" />
               </span>
             </p>
           </div>
