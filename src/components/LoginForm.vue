@@ -3,7 +3,7 @@
     <div class="column is-half">
       <section class="form">
         <h1 class="title">Login</h1>
-        <form @submit.prevent="formSubmit">
+        <form @submit.prevent>
           <div class="field">
             <p
               v-if="form.error"
@@ -43,15 +43,42 @@
               </span>
             </p>
           </div>
-          <div class="field">
+          <div class="field is-grouped">
             <p class="control">
               <button
                 :disabled="!formValid"
-                class="button is-primary e2e-button-login"
+                class="button is-primary"
+                @click="passwordLogin"
               >
-                Login
+                Login with password
               </button>
             </p>
+            <p class="control">
+              <button
+                :disabled="!form.username"
+                class="button is-primary"
+                @click="keyLogin"
+              >
+                Login with FIDO2
+              </button>
+            </p>
+            <p class="control">
+              <button
+                :disabled="!form.username"
+                class="button is-primary"
+                @click="register"
+              >
+                register
+              </button>
+            </p>
+            <div class="field">
+              <p
+                v-if="form.message"
+                class="help is-success"
+              >
+                {{form.message}}
+              </p>
+            </div>
           </div>
         </form>
       </section>
@@ -70,6 +97,7 @@
         form: {
           username: '',
           password: '',
+          message: '',
           error: ''
         },
         isCredentialApiAvailable: window.PasswordCredential || window.FederatedCredential
@@ -81,65 +109,32 @@
       }
     },
     created() {
-
       if (this.isCredentialApiAvailable) {
-        (async () => {
-
-          const credentials = await navigator.credentials.get({
-            password: true,
-            federated: {
-              providers: [
-                'https://accounts.google.com',
-                'https://facebook.com'
-              ]
-            }
-          });
-
-          if (credentials) {
-            if (credentials.type === 'password') {
-              this.passwordLogin(credentials);
-            } else if (credentials.type === 'federated' && credentials.provider === 'https://accounts.google.com') {
-              console.log('Google login', 'TODO...');
-              // this.signInWithGoogle(credentials);
-            } else if (credentials.type === 'federated' && credentials.provider === 'https://facebook.com') {
-              console.log('Facebook login', 'TODO...');
-              // this.signInWithFacebook(credentials);
-            }
-          }
-
-        })();
+        LoginService.autoLogin()
+          .then(() => this.$emit('userStatusChanged'))
+          .catch(e => this.form.error = e.message);
       }
     },
     methods: {
-      formSubmit() {
-        this.passwordLogin({ id: this.form.username, name: this.form.username, password: this.form.password });
-      },
-      async passwordLogin({ id, name, password }) {
-        let credentials;
-
-        if (window.PasswordCredential) {
-          credentials = new PasswordCredential({
-            id,
-            name,
-            password
-          });
-
-          if (credentials instanceof Credential) {
-            await navigator.credentials.store(credentials);
-          }
-        } else {
-          credentials = { id, name, password };
-        }
-
-        LoginService.login(credentials)
+      passwordLogin() {
+        LoginService.passwordLogin({ id: this.form.username, name: this.form.username, password: this.form.password })
           .then(() => this.$emit('userStatusChanged'))
           .catch(e => this.form.error = e.message);
-
-        this.resetForm();
+      },
+      register() {
+        LoginService.register(this.form.username)
+          .then(response => this.form.message = 'Great success!')
+          .catch(e => this.form.error = e.message);
+      },
+      keyLogin() {
+        LoginService.keyLogin(this.form.username)
+          .then(() => this.$emit('userStatusChanged'))
+          .catch(e => this.form.error = e.message);
       },
       resetForm() {
         this.form.username = '';
         this.form.password = '';
+        this.form.message = '';
         this.form.error = '';
       }
     }

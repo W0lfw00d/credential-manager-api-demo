@@ -14,13 +14,13 @@
 
 <script>
   import LoginForm from './components/LoginForm.vue';
-  import HellowWorld from './components/HelloWorld.vue';
+  import SecurePage from './components/SecurePage.vue';
 
   export default {
     name: 'app',
     components: {
       LoginForm,
-      HellowWorld
+      HellowWorld: SecurePage
     },
     data() {
       return {
@@ -29,7 +29,7 @@
     },
     methods: {
       checkUserStatus() {
-        const token = localStorage.getItem('user-token');
+        const token = localStorage.getItem('api_token');
         this.loggedIn = token !== null;
       }
     },
