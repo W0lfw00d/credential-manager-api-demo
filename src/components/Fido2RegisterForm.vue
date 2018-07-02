@@ -2,7 +2,7 @@
   <div class="columns is-centered">
     <div class="column is-half">
       <section class="form">
-        <h1 class="title">Login</h1>
+        <h1 class="title">Register with Fido2</h1>
         <form @submit.prevent>
           <div class="field">
             <p
@@ -15,7 +15,7 @@
               v-if="form.message"
               class="help is-success"
             >
-              Success: {{form.message}}
+              Result: {{form.message}}
             </p>
           </div>
           <div class="field">
@@ -34,28 +34,13 @@
             </p>
           </div>
           <div class="field">
-            <p class="control has-icons-left">
-              <input
-                id="password"
-                v-model="form.password"
-                placeholder="secret"
-                name="password"
-                class="input"
-                type="password"
-              >
-              <span class="icon is-small is-left">
-                <i class="fas fa-lock" />
-              </span>
-            </p>
-          </div>
-          <div class="field">
             <p class="control">
               <button
                 :disabled="!formValid"
                 class="button is-primary"
-                @click="passwordLogin"
+                @click="register"
               >
-                Login with password
+                Register
               </button>
             </p>
           </div>
@@ -70,7 +55,7 @@
   import LoginService from '../service/login.service';
 
   export default {
-    name: 'LoginForm',
+    name: 'Fido2RegisterForm',
     data() {
       return {
         form: {
@@ -78,36 +63,23 @@
           password: '',
           message: '',
           error: ''
-        },
-        isCredentialApiAvailable: window.PasswordCredential || window.FederatedCredential
+        }
       };
     },
     computed: {
       formValid() {
-        return this.form.username && this.form.password;
-      }
-    },
-    created() {
-      if (this.isCredentialApiAvailable) {
-        LoginService.autoLogin()
-          .then(() => this.$router.push({ path: '/secret' }))
-          .catch(e => this.form.error = e.message);
+        return this.form.username;
       }
     },
     methods: {
-      passwordLogin() {
-        LoginService.passwordLogin({ id: this.form.username, name: this.form.username, password: this.form.password })
-          .then(() => this.$router.push({ path: '/secret' }))
-          .catch(this.setError);
-      },
       register() {
-        LoginService.register(this.form.username)
-          .then(this.setMessage('Great success!'))
-          .catch(this.setError);
+        LoginService.keyRegister(this.form.username)
+          .then(this.setMessage('Registration successful!'))
+          .catch(error => this.setError(error.response.data.messages[0]));
       },
       setError(error){
         this.form.message = '';
-        this.form.error = error.message;
+        this.form.error = error;
       },
       setMessage(message){
         this.form.message = message;
@@ -115,7 +87,6 @@
       },
       resetForm() {
         this.form.username = '';
-        this.form.password = '';
         this.form.message = '';
         this.form.error = '';
       }

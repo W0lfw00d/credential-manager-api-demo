@@ -3,7 +3,7 @@
     <h1 class="title">Secure page</h1>
     <p>
       This page is only visible to verified users and you, {{ username }}, are one of them. <br />
-      Luck you!
+      Lucky you!
     </p>
     <button @click="logout">
       logout
@@ -15,7 +15,7 @@
   import loginService from '../service/login.service';
 
   export default {
-    name: 'HelloWorld',
+    name: 'SecurePage',
     data() {
       return {
         username: localStorage.getItem('username')
@@ -24,7 +24,7 @@
     methods: {
       logout() {
         loginService.logout();
-        this.$emit('userStatusChanged');
+        this.$router.push({ path: '/' });
       }
     }
   };

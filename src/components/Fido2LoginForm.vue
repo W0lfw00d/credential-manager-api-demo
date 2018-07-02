@@ -2,7 +2,7 @@
   <div class="columns is-centered">
     <div class="column is-half">
       <section class="form">
-        <h1 class="title">Login</h1>
+        <h1 class="title">Login with Fido2</h1>
         <form @submit.prevent>
           <div class="field">
             <p
@@ -23,7 +23,7 @@
               <input
                 id="username"
                 v-model="form.username"
-                placeholder="Enter an username"
+                placeholder="your username"
                 name="username"
                 class="input"
                 autofocus
@@ -33,29 +33,15 @@
               </span>
             </p>
           </div>
-          <div class="field">
-            <p class="control has-icons-left">
-              <input
-                id="password"
-                v-model="form.password"
-                placeholder="secret"
-                name="password"
-                class="input"
-                type="password"
-              >
-              <span class="icon is-small is-left">
-                <i class="fas fa-lock" />
-              </span>
-            </p>
-          </div>
+
           <div class="field">
             <p class="control">
               <button
                 :disabled="!formValid"
                 class="button is-primary"
-                @click="passwordLogin"
+                @click="keyLogin"
               >
-                Login with password
+                Login with FIDO2
               </button>
             </p>
           </div>
@@ -70,52 +56,37 @@
   import LoginService from '../service/login.service';
 
   export default {
-    name: 'LoginForm',
+    name: 'Fido2LoginForm',
     data() {
       return {
         form: {
           username: '',
-          password: '',
           message: '',
           error: ''
-        },
-        isCredentialApiAvailable: window.PasswordCredential || window.FederatedCredential
+        }
       };
     },
     computed: {
       formValid() {
-        return this.form.username && this.form.password;
-      }
-    },
-    created() {
-      if (this.isCredentialApiAvailable) {
-        LoginService.autoLogin()
-          .then(() => this.$router.push({ path: '/secret' }))
-          .catch(e => this.form.error = e.message);
+        return this.form.username;
       }
     },
     methods: {
-      passwordLogin() {
-        LoginService.passwordLogin({ id: this.form.username, name: this.form.username, password: this.form.password })
+      keyLogin() {
+        LoginService.keyLogin(this.form.username)
           .then(() => this.$router.push({ path: '/secret' }))
-          .catch(this.setError);
+          .catch(error => this.setError(error.response.data.messages[0]));
       },
-      register() {
-        LoginService.register(this.form.username)
-          .then(this.setMessage('Great success!'))
-          .catch(this.setError);
-      },
-      setError(error){
+      setError(error) {
         this.form.message = '';
-        this.form.error = error.message;
+        this.form.error = error;
       },
-      setMessage(message){
+      setMessage(message) {
         this.form.message = message;
         this.form.error = '';
       },
       resetForm() {
         this.form.username = '';
-        this.form.password = '';
         this.form.message = '';
         this.form.error = '';
       }
