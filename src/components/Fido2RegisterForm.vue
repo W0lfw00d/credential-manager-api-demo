@@ -75,13 +75,19 @@
       register() {
         LoginService.keyRegister(this.form.username)
           .then(this.setMessage('Registration successful!'))
-          .catch(error => this.setError(error.response.data.messages[0]));
+          .catch(error => {
+            if (error.message) {
+              this.setError(error.message);
+            } else {
+              this.setError(error.response.data.messages[0]);
+            }
+          });
       },
-      setError(error){
+      setError(error) {
         this.form.message = '';
         this.form.error = error;
       },
-      setMessage(message){
+      setMessage(message) {
         this.form.message = message;
         this.form.error = '';
       },

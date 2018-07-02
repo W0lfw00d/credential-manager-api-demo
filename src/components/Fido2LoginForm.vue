@@ -75,7 +75,13 @@
       keyLogin() {
         LoginService.keyLogin(this.form.username)
           .then(() => this.$router.push({ path: '/secret' }))
-          .catch(error => this.setError(error.response.data.messages[0]));
+          .catch(error => {
+            if (error.message) {
+              this.setError(error.message);
+            } else {
+              this.setError(error.response.data.messages[0]);
+            }
+          });
       },
       setError(error) {
         this.form.message = '';
