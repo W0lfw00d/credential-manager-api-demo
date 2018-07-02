@@ -76,10 +76,10 @@
         LoginService.keyRegister(this.form.username)
           .then(this.setMessage('Registration successful!'))
           .catch(error => {
-            if (error.message) {
-              this.setError(error.message);
-            } else {
+            if (error.response) {
               this.setError(error.response.data.messages[0]);
+            } else {
+              this.setError(error.message);
             }
           });
       },

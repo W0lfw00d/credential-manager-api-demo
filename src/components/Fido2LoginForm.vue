@@ -76,10 +76,10 @@
         LoginService.keyLogin(this.form.username)
           .then(() => this.$router.push({ path: '/secret' }))
           .catch(error => {
-            if (error.message) {
-              this.setError(error.message);
-            } else {
+            if (error.response) {
               this.setError(error.response.data.messages[0]);
+            } else {
+              this.setError(error.message);
             }
           });
       },
